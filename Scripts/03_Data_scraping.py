@@ -22,6 +22,7 @@ def get_random_user_agent():
 # Asynchronous function to scrape a single Immoweb page
 async def scrape_immoweb_page(session, url):
     headers = {'User-Agent': get_random_user_agent()}
+    error_count = 0
     try:
         async with session.get(url, headers=headers) as response:
             html = await response.text()
@@ -43,7 +44,7 @@ async def scrape_immoweb_page(session, url):
             'Livable Space (m2)': extract_living_area(soup),
             'Fully Equipped Kitchen': extract_equiped_kitchen(block_content),
             'Furnished': extract_furnished(block_content),
-            'Number of Fireplaces': extract_fireplaces(block_content),
+            'Any Fireplace ?': extract_fireplaces(block_content),
             'Terrace': extract_terrace(block_content),                       
             'Terrace Area (m2)': extract_terrace_area(block_content),         
             'Garden': extract_garden(block_content),                          
@@ -60,7 +61,8 @@ async def scrape_immoweb_page(session, url):
         
         return data
     except Exception as e:
-        print(f"Error scraping {url}: {e}")
+        error_count += 1
+        print(f"Error scraping {url}: {e}, {error_count}", end='\r')
         return None
 
 # Main asynchronous function to scrape multiple pages concurrently
@@ -74,7 +76,7 @@ async def main(url_list, output_file):
             data = await task
             if data:
                 immoweb_data.append(data)
-                print(f'Data extraction: {index+1}/{len(tasks)} pages loaded')
+                print(f'Data extraction: {index+1}/{len(tasks)} pages loaded',end='\r')
 
     # Save to DataFrame and CSV
     df = pd.DataFrame(immoweb_data)

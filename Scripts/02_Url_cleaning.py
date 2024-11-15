@@ -9,6 +9,9 @@ df = pd.read_csv(extracted_links_path)
 # Filter the DataFrame to keep only the rows where 'Links' starts with "https://www.immoweb.be/"
 df = df[df['Links'].str.startswith('https://www.immoweb.be/')]
 
+# Remove duplicate links
+df = df.drop_duplicates(subset='Links')
+
 # Display the first few rows of the updated DataFrame
 print(df.head())
 

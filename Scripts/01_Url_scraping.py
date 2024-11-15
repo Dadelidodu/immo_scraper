@@ -8,7 +8,6 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException
 from bs4 import BeautifulSoup
 
 # List of User-Agent strings to rotate
@@ -37,64 +36,48 @@ driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install())
 # List to hold all the hrefs from each page
 all_hrefs = []
 
-# Function to extract links from a given URL
-def extract_links(url):
-    retry_attempts = 3
-    for page_num in range(1, 334):
-        for attempt in range(retry_attempts):
-            try:
-                # Navigate to the page
-                driver.get(url)
-                WebDriverWait(driver, 20).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'search-results__item')))
-                
-                page_source = driver.page_source
-                
-                # Parse the page source with BeautifulSoup
-                soup = BeautifulSoup(page_source, 'html.parser')
-                list_items = soup.find_all('li', class_='search-results__item')
-                
-                # Collect all hrefs on this page
-                hrefs = []
-                for li in list_items:
-                    for a in li.find_all('a', href=True):
-                        href = a['href']
-                        hrefs.append(href)
-                
-                all_hrefs.extend(hrefs)
-                
-                # Print progress
-                print(f"Page {page_num} - {len(hrefs)} links extracted.")
-                break  # Exit retry loop if successful
-                
-            except TimeoutException:
-                print(f"Attempt {attempt + 1} for page {page_num} timed out.")
-                continue
+# Loop through pages 1 to 333
+for page_num in range(1, 334):
 
-# Main function to loop through each URL and extract links
-def main():
-    url_list = [
-        'https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&minPrice=0&minSurface=1&isAPublicSale=false&isALifeAnnuitySale=false&isNewlyBuilt=false&page={page_num}&orderBy=relevance',
-        'https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&minPrice=0&minSurface=200&isAPublicSale=false&isALifeAnnuitySale=false&isNewlyBuilt=false&page={page_num}&orderBy=relevance'
-    ]
+    # Update the URL with the current page number
     
-    # Extract links from each URL in the list
-    for url in url_list:
-        extract_links(url)
+    url= f'https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&minPrice=0&minSurface=1&isAPublicSale=false&isALifeAnnuitySale=false&isNewlyBuilt=false&page={page_num}&orderBy=relevance'
+    
+    # Navigate to the page
+    
+    driver.get(url)
+    WebDriverWait(driver, 10).until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'search-results__item')))
+    page_source = driver.page_source
+    
+    # Parse the page source with BeautifulSoup
 
-    # Close the driver after collecting all links
-    driver.quit()
+    soup = BeautifulSoup(page_source, 'html.parser')
+    list_items = soup.find_all('li', class_='search-results__item')
+    hrefs = []
 
-    # Export all hrefs to a CSV file
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    extracted_links_path = os.path.join(script_dir, '../csv_files/extracted_links.csv')
-    with open(extracted_links_path, 'w', newline='', encoding='utf-8') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(['Links'])  # Write header
-        for href in all_hrefs:
-            writer.writerow([href])  # Write each link in a new row
+    for li in list_items:
+        for a in li.find_all('a', href=True):
+            href = a['href']
+            hrefs.append(href)
+    
+    all_hrefs.extend(hrefs)
+    
+    # Print progress
+    print(f"Page {page_num} - {len(hrefs)} links extracted.")
 
-    print("Links have been exported to 'extracted_links.csv'.")
+# Close the driver after collecting all links
+driver.quit()
 
-# Run the main function
-if __name__ == "__main__":
-    main()
+# Print the total number of links extracted
+print(f"Total links extracted: {len(all_hrefs)}")
+
+# Export all hrefs to a CSV file
+script_dir = os.path.dirname(os.path.abspath(__file__))
+extracted_links_path = os.path.join(script_dir, '../csv_files/extracted_links.csv')
+with open(extracted_links_path, 'w', newline='', encoding='utf-8') as csvfile:
+    writer = csv.writer(csvfile)
+    writer.writerow(['Links'])  # Write header
+    for href in all_hrefs:
+        writer.writerow([href])  # Write each link in a new row
+
+print("Links have been exported to 'extracted_links.csv'.")

@@ -16,7 +16,7 @@ def extract_zipcode(url):
     if zipcode:
         return int(zipcode)
     else:
-        return 0
+        return None
 
 def extract_living_area(soup):
     overview_columns = soup.find_all('div', class_='overview__column')
@@ -25,8 +25,8 @@ def extract_living_area(soup):
         if overview_items:
             item_text = overview_items[0].get_text(strip=True)
             cleaned_text = re.sub(r'\D', '', item_text)
-            return cleaned_text if cleaned_text else 0
-    return 0
+            return cleaned_text if cleaned_text else None
+    return None
 
 def extract_land_surface(soup):
     overview_columns = soup.find_all('div', class_='overview__column')
@@ -37,8 +37,8 @@ def extract_land_surface(soup):
             cleaned_text = re.sub(r'\D', '', item_text)
             return cleaned_text
         else:
-            return 0
-    return 0
+            return None
+    return None
 
 def extract_price(soup):
     elem_div = soup.find("div", class_="classified__header-primary-info")
@@ -51,11 +51,11 @@ def extract_price(soup):
                 cleaned_text = re.sub(r'\D', '', true_price)
                 return cleaned_text
             else:
-                return 0
+                return None
         else:
-            return 0
+            return None
     else:
-        return 0
+        return None
     
 def extract_numbers_of_rooms(soup):
     overview_columns = soup.find_all('div', class_='overview__column')
@@ -64,8 +64,8 @@ def extract_numbers_of_rooms(soup):
         if overview_items:
             item_text = overview_items[0].get_text(strip=True)
             cleaned_text = re.sub(r'\D', '', item_text)
-            return cleaned_text if cleaned_text else 0
-    return 0
+            return cleaned_text if cleaned_text else None
+    return None
 
 def extract_property_subtype(url):
     match = re.search(r'classified/([^/]+)/', url)
@@ -79,9 +79,9 @@ def extract_property_type(url):
     property_type = extract_property_subtype(url)
     houses = ["house", "bungalow", "castle", "country-house", "mixed-use-building", 
               "country-cottage", "apartment-block", "town-house", "villa", "manor-house", 
-              "chalet", "farmhouse", "exceptional-property", "mansion", "other-properties", "pavilion"]
+              "chalet", "farmhouse", "exceptional-property", "mansion", "other-properties", "pavilion", "other-property"]
     apartments = ["apartment", "ground-floor", "triplex", "penthouse", 
-                  "kot", "duplex", "studio", "loft", "service flat"]
+                  "kot", "duplex", "studio", "loft", "service-flat", "flat-studio"]
     
     if property_type in houses:
         return 'House'
@@ -119,7 +119,7 @@ def extract_furnished(block_content):
             match = re.search(pattern, block_content, re.IGNORECASE)
             
             # Return 1 if the content is "Yes", else return 0
-            if match and match.group(1).strip().lower() == "yes":
+            if match and match != None and match.group(1).strip().lower() == "yes":
                 return 1
             else:
                 return 0
@@ -132,8 +132,8 @@ def extract_fireplaces(block_content):
 
             pattern = r'How many fireplaces\?</th>\s*<td class="classified-table__data">\s*(\d+)\s*</td>'
             match = re.search(pattern, block_content)
-            if match:
-                return int(match.group(1)) if match else 0
+            if match and match != None:
+                return 1 if match else 0
     return 0
 
 def extract_terrace_area(block_content):
@@ -143,15 +143,15 @@ def extract_terrace_area(block_content):
             
             pattern = r'Terrace surface</th>\s*<td class="classified-table__data">\s*(\d+)\s*'
             match = re.search(pattern, block_content, re.DOTALL)
-            if match:
-                return int(match.group(1)) if match else 0
-    return 0
+            if match and match != None:
+                return int(match.group(1)) if match else None
+    return None
 
 def extract_terrace(soup):
     
     terrace_area = extract_terrace_area(soup)
         
-    if terrace_area != 0:
+    if terrace_area != 0 and terrace_area != None:
         return 1
     else:
         return 0
@@ -163,15 +163,15 @@ def extract_garden_area(block_content):
 
             pattern = r'Garden surface</th>\s*<td class="classified-table__data">\s*(\d+)\s*'
             match = re.search(pattern, block_content, re.DOTALL)
-            if match:
-                return int(match.group(1)) if match else 0
-    return 0
+            if match and match != None:
+                return int(match.group(1)) if match else None
+    return None
 
 def extract_garden(soup):
     
     garden_area = extract_garden_area(soup)
     
-    if garden_area != 0:
+    if garden_area != 0 and garden_area != None:
         return 1
     else:
         return 0   
@@ -185,10 +185,10 @@ def extract_number_of_facades(block_content):
             # Adjusted regex pattern to match the number in <td> associated with "Number of frontages"
             pattern = r'<th[^>]*>\s*Number of frontages\s*</th>\s*<td class="classified-table__data">\s*(\d+)\s*</td>'
             match = re.search(pattern, block_content, re.DOTALL)
-            if match:
+            if match and match != None:
             
-                return int(match.group(1)) if match else 0
-    return 0
+                return int(match.group(1)) if match else None
+    return None
 
 def extract_construction_year(block_content):
     if block_content:
@@ -199,10 +199,10 @@ def extract_construction_year(block_content):
             # Adjusted regex pattern to match the number in <td> associated with "Number of frontages"
             pattern = r'<th[^>]*>\s*Construction year\s*</th>\s*<td class="classified-table__data">\s*(\d+)\s*</td>'
             match = re.search(pattern, block_content, re.DOTALL)
-            if match:
+            if match and match != None:
                 birth_year = int(match.group(1)) 
-                return birth_year if birth_year > 0 else 0
-    return 0
+                return birth_year if birth_year else None
+    return None
 
 def extract_peb(block_content):
     if block_content:
@@ -232,8 +232,8 @@ def extract_energy_consumption(block_content):
             if match:
                 return int(match.group(1).strip())
             else:
-                return 0
-    return 0
+                return None
+    return None
 
 
 def extract_building_state(block_content):
@@ -245,8 +245,8 @@ def extract_building_state(block_content):
             # Adjusted regex pattern to match the number in <td> associated with "Number of frontages"
             pattern = r'<th[^>]*>\s*Building condition\s*</th>\s*<td class="classified-table__data">\s*(.*?)\s*</td>'
             match = re.search(pattern, block_content, re.DOTALL)
-            
-            return match.group(1).strip() if match else None
+            if match:
+                return match.group(1).strip() if match else None
     return None
 
 def extract_swimming_pool(block_content):
