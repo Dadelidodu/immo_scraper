@@ -85,9 +85,7 @@ df = df[(df['Terrace Area (m2)'] <= (df['Terrace Area (m2)'].mean() + 5 * df['Te
 df = df[(df['Number of Facades'] >= (df['Number of Facades'].mean() - 2 * df['Number of Facades'].std())) & (df['Number of Facades'] <= (df['Number of Facades'].mean() + 2 * df['Number of Facades'].std()))]
 df = df[(df['Primary Energy Consumption (kWh/m2)'] <= (df['Primary Energy Consumption (kWh/m2)'].mean() + 0.01 * df['Primary Energy Consumption (kWh/m2)'].std()))]
 df = df[(df['Surface of the Land (m2)'] <= (df['Surface of the Land (m2)'].mean() + 7 * df['Surface of the Land (m2)'].std()))]
-
-
-#df = df[(df['Primary Energy Consumption (kWh/m2)'] >= (df['Primary Energy Consumption (kWh/m2)'].mean() - 2 * df['Primary Energy Consumption (kWh/m2)'].std())) & (df['Primary Energy Consumption (kWh/m2)'] <= (df['Primary Energy Consumption (kWh/m2)'].mean() + 2 * df['Primary Energy Consumption (kWh/m2)'].std()))]
+df = df[(df['Livable Space (m2)'] >= (df['Livable Space (m2)'].mean() - 1.2 * df['Livable Space (m2)'].std())) & (df['Livable Space (m2)'] <= (df['Livable Space (m2)'].mean() + 3 * df['Livable Space (m2)'].std()))]
 
 
 # Set all values as int
@@ -106,9 +104,9 @@ df.to_csv(clean_dataset_path, index=False)
 clean_dataset_path = os.path.join(script_dir, '../csv_files/cleaned_dataset.csv')
 df.to_csv(clean_dataset_path, index=False)
 
-df_sorted_desc = df.sort_values(by=['Primary Energy Consumption (kWh/m2)', 'Price'], ascending=[False, False]).head(20)
-df_sorted_asc = df.sort_values(by=['Primary Energy Consumption (kWh/m2)', 'Price'], ascending=[True, True]).head(20)
-print(df_sorted_desc[['Primary Energy Consumption (kWh/m2)', 'Price', 'Url']])
-print(df_sorted_asc[['Primary Energy Consumption (kWh/m2)', 'Price', 'Url']])
+df_sorted_desc = df.sort_values(by=['Livable Space (m2)', 'Price'], ascending=[False, False]).head(20)
+df_sorted_asc = df.sort_values(by=['Livable Space (m2)', 'Price'], ascending=[True, True]).head(20)
+print(df_sorted_desc[['Livable Space (m2)', 'Price', 'Url']])
+print(df_sorted_asc[['Livable Space (m2)', 'Price', 'Url']])
 
 print(df.shape)
