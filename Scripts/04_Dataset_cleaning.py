@@ -31,16 +31,6 @@ df = df.drop(columns=['Any Fireplace ?'])
 # Drop missing values in the 'Number of Facades' columns with 0
 df = df.dropna(subset=['Number of Facades'])
 
-# # Replace 'Number of facades' with 1 where 'Type of Property' is 0 (apartment) and 'Number of facades' is 0
-# df.loc[(df['Type of Property'] == 0) & (df['Number of Facades'] == 0), 'Number of Facades'] = 1
-
-# # Replace 'Number of Facades' with 2 where 'Subtype of Property' is 'duplex' or 'town-house' and 'Number of Facades' is 0
-# df.loc[(df['Subtype of Property'].isin(['duplex', 'town-house'])) & (df['Number of Facades'] == 0), 'Number of Facades'] = 2
-
-# # Replace remaining 'Number of Facades' 0 values for remaining houses with 4
-# # Replace 'Number of Facades' with 4 where 'Type of Property' is 1 (House) and 'Number of Facades' is 0
-# df.loc[(df['Type of Property'] == 1) & (df['Number of Facades'] == 0), 'Number of Facades'] = 4
-
 # Replace missing values in the 'Terrace Area (m2)' columns with 0
 df['Terrace Area (m2)'] = df['Terrace Area (m2)'].fillna(0)
 
@@ -80,12 +70,24 @@ PEB_mapping = {
 df['PEB'] = df['PEB'].replace(PEB_mapping)
 df = df.dropna(subset=['PEB'])
 
-# Drop the 'Url' column from the DataFrame (since not required and non-numerical values)
-df = df.drop_duplicates(subset=['Locality', 'Zip Code', 'Price', 'Livable Space (m2)', 'Number of Rooms'])
-df = df.drop(columns=['Url'])
-
 # Drop null values from Construction Year column
 df = df.dropna(subset=['Construction Year'])
+
+# Drop the 'Url' column from the DataFrame (since not required and non-numerical values)
+df = df.drop_duplicates(subset=['Price', 'Construction Year', 'Livable Space (m2)', 'Number of Rooms'])
+df = df.drop(columns=['Url'])
+
+# Drop outliers
+
+
+df = df[(df['Price'] >= (df['Price'].mean() - 0.5 * df['Price'].std())) & (df['Price'] <= (df['Price'].mean() + 0.5 * df['Price'].std()))]
+df = df[(df['Number of Rooms'] >= (df['Number of Rooms'].mean() - 8 * df['Number of Rooms'].std())) & (df['Number of Rooms'] <= (df['Number of Rooms'].mean() + 8 * df['Number of Rooms'].std()))]
+df = df[(df['Terrace Area (m2)'] >= (df['Terrace Area (m2)'].mean() - 4 * df['Terrace Area (m2)'].std())) & (df['Terrace Area (m2)'] <= (df['Terrace Area (m2)'].mean() + 4 * df['Terrace Area (m2)'].std()))]
+df = df[(df['Number of Facades'] >= (df['Number of Facades'].mean() - 2 * df['Number of Facades'].std())) & (df['Number of Facades'] <= (df['Number of Facades'].mean() + 2 * df['Number of Facades'].std()))]
+df = df[(df['Primary Energy Consumption (kWh/m2)'] >= (df['Primary Energy Consumption (kWh/m2)'].mean() - 0.01 * df['Primary Energy Consumption (kWh/m2)'].std())) & (df['Primary Energy Consumption (kWh/m2)'] <= (df['Primary Energy Consumption (kWh/m2)'].mean() + 0.01 * df['Primary Energy Consumption (kWh/m2)'].std()))]
+
+#df = df[(df['Primary Energy Consumption (kWh/m2)'] >= (df['Primary Energy Consumption (kWh/m2)'].mean() - 2 * df['Primary Energy Consumption (kWh/m2)'].std())) & (df['Primary Energy Consumption (kWh/m2)'] <= (df['Primary Energy Consumption (kWh/m2)'].mean() + 2 * df['Primary Energy Consumption (kWh/m2)'].std()))]
+
 
 # Set all values as int
 
@@ -104,3 +106,6 @@ df.to_csv(clean_dataset_path, index=False)
 
 clean_dataset_path = os.path.join(script_dir, '../csv_files/cleaned_dataset.csv')
 df.to_csv(clean_dataset_path, index=False)
+
+df_sorted = df.sort_values(by=['Primary Energy Consumption (kWh/m2)', 'Price'], ascending=[False, False]).head(20)
+print(df_sorted[['Primary Energy Consumption (kWh/m2)', 'Price']])
