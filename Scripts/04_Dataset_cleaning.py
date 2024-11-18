@@ -75,29 +75,28 @@ df = df.dropna(subset=['Construction Year'])
 
 # Drop the 'Url' column from the DataFrame (since not required and non-numerical values)
 df = df.drop_duplicates(subset=['Price', 'Construction Year', 'Livable Space (m2)', 'Number of Rooms'])
-df = df.drop(columns=['Url'])
 
 # Drop outliers
 
 
 df = df[(df['Price'] >= (df['Price'].mean() - 0.5 * df['Price'].std())) & (df['Price'] <= (df['Price'].mean() + 0.5 * df['Price'].std()))]
-df = df[(df['Number of Rooms'] >= (df['Number of Rooms'].mean() - 8 * df['Number of Rooms'].std())) & (df['Number of Rooms'] <= (df['Number of Rooms'].mean() + 8 * df['Number of Rooms'].std()))]
-df = df[(df['Terrace Area (m2)'] >= (df['Terrace Area (m2)'].mean() - 4 * df['Terrace Area (m2)'].std())) & (df['Terrace Area (m2)'] <= (df['Terrace Area (m2)'].mean() + 4 * df['Terrace Area (m2)'].std()))]
+df = df[(df['Number of Rooms'] >= (df['Number of Rooms'].mean() - 7 * df['Number of Rooms'].std())) & (df['Number of Rooms'] <= (df['Number of Rooms'].mean() + 3 * df['Number of Rooms'].std()))]
+df = df[(df['Terrace Area (m2)'] <= (df['Terrace Area (m2)'].mean() + 5 * df['Terrace Area (m2)'].std()))]
 df = df[(df['Number of Facades'] >= (df['Number of Facades'].mean() - 2 * df['Number of Facades'].std())) & (df['Number of Facades'] <= (df['Number of Facades'].mean() + 2 * df['Number of Facades'].std()))]
-df = df[(df['Primary Energy Consumption (kWh/m2)'] >= (df['Primary Energy Consumption (kWh/m2)'].mean() - 0.01 * df['Primary Energy Consumption (kWh/m2)'].std())) & (df['Primary Energy Consumption (kWh/m2)'] <= (df['Primary Energy Consumption (kWh/m2)'].mean() + 0.01 * df['Primary Energy Consumption (kWh/m2)'].std()))]
+df = df[(df['Primary Energy Consumption (kWh/m2)'] <= (df['Primary Energy Consumption (kWh/m2)'].mean() + 0.01 * df['Primary Energy Consumption (kWh/m2)'].std()))]
+df = df[(df['Surface of the Land (m2)'] <= (df['Surface of the Land (m2)'].mean() + 7 * df['Surface of the Land (m2)'].std()))]
+
 
 #df = df[(df['Primary Energy Consumption (kWh/m2)'] >= (df['Primary Energy Consumption (kWh/m2)'].mean() - 2 * df['Primary Energy Consumption (kWh/m2)'].std())) & (df['Primary Energy Consumption (kWh/m2)'] <= (df['Primary Energy Consumption (kWh/m2)'].mean() + 2 * df['Primary Energy Consumption (kWh/m2)'].std()))]
 
 
 # Set all values as int
 
-df_droped = df.drop(columns=['Type of Property', 'Subtype of Property', 'Locality'])
+df_droped = df.drop(columns=['Type of Property', 'Subtype of Property', 'Locality', 'Url'])
 columns_list = df_droped.columns.tolist()
-print(columns_list)
 
 for column in columns_list:
         df[column] = df[column].astype(int)
-        print(type(df[column].iloc[0]))
 
 
 # Saving
@@ -107,5 +106,9 @@ df.to_csv(clean_dataset_path, index=False)
 clean_dataset_path = os.path.join(script_dir, '../csv_files/cleaned_dataset.csv')
 df.to_csv(clean_dataset_path, index=False)
 
-df_sorted = df.sort_values(by=['Primary Energy Consumption (kWh/m2)', 'Price'], ascending=[False, False]).head(20)
-print(df_sorted[['Primary Energy Consumption (kWh/m2)', 'Price']])
+df_sorted_desc = df.sort_values(by=['Primary Energy Consumption (kWh/m2)', 'Price'], ascending=[False, False]).head(20)
+df_sorted_asc = df.sort_values(by=['Primary Energy Consumption (kWh/m2)', 'Price'], ascending=[True, True]).head(20)
+print(df_sorted_desc[['Primary Energy Consumption (kWh/m2)', 'Price', 'Url']])
+print(df_sorted_asc[['Primary Energy Consumption (kWh/m2)', 'Price', 'Url']])
+
+print(df.shape)
