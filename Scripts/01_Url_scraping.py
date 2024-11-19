@@ -73,11 +73,11 @@ output_csv_file = scraping_links_path
 
 url_list = []
 for page_num in range(334):
-        url_list.append(f'https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&minPrice=0&minSurface=1&maxSurface=100&isAPublicSale=false&isALifeAnnuitySale=false&isNewlyBuilt=false&page={page_num}&orderBy=relevance')
+        url_list.append(f'https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&minPrice=50000&maxPrice=3000000&minSurface=30&maxSurface=150&isAPublicSale=false&isALifeAnnuitySale=false&isNewlyBuilt=false&page={page_num}&orderBy=relevance')
 for page_num in range(334):
-        url_list.append(f'https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&minPrice=0&minSurface=100&maxSurface=200&isAPublicSale=false&isALifeAnnuitySale=false&isNewlyBuilt=false&page={page_num}&orderBy=relevance')        
+        url_list.append(f'https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&minPrice=50000&maxPrice=3000000&minSurface=150&maxSurface=400&isAPublicSale=false&isALifeAnnuitySale=false&isNewlyBuilt=false&page={page_num}&orderBy=relevance')        
 for page_num in range(334):
-        url_list.append(f'https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&minPrice=0&minSurface=200&maxSurface=1000&isAPublicSale=false&isALifeAnnuitySale=false&isNewlyBuilt=false&page={page_num}&orderBy=relevance')        
+        url_list.append(f'https://www.immoweb.be/en/search/house-and-apartment/for-sale?countries=BE&minPrice=50000&maxPrice=3000000&minSurface=400&maxSurface=1000&isAPublicSale=false&isALifeAnnuitySale=false&isNewlyBuilt=false&page={page_num}&orderBy=relevance')        
 
 # Run the asyncio event loop
 start_time = time.time()
