@@ -56,7 +56,7 @@ state_mapping = {
 }
 
 df['State of the Building'] = df['State of the Building'].replace(state_mapping)
-df = df.dropna(subset=['State of the Building'])
+df['State of the Building'] = df['State of the Building'].fillna(0)
 
 # Encode PEB: Ordinal encoding, since categories have inherent order + drop null values
 PEB_mapping = {
@@ -70,7 +70,7 @@ PEB_mapping = {
 }
 
 df['PEB'] = df['PEB'].replace(PEB_mapping)
-df = df.dropna(subset=['PEB'])
+df['PEB'] = df['PEB'].fillna(0)
 
 # # Drop Construction Year column
 df = df.drop(columns=['Construction Year'])
